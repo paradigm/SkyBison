@@ -1,0 +1,24 @@
+Will fill out more details later, just quick and dirty README for testing.
+
+To install,  dump skybison.vim in ~/.vim/plugin (or if you use pathogen,
+~/.vim/bundle/skybison/plugin/, or if you use something else, whatever that
+uses)
+
+SkyBison() is a function which takes two arguments:
+
+The first argument (a string) should be a cmdline command (without the ":") which
+itself takes an argument.  For example, "b" (to switch buffer), "tag" (to jump
+to a tag), "e" (to edit a file), and "h" (help).  Anything that works with
+Vim's cmdline-completion should (in theory) work.
+
+The second argument should be either a 0 or a 1. If the second argument is 1,
+SkyBison will automatically press ENTER when the a single argument is found.
+Otherwise, if it is 0, SkyBison will wait for the user to press ENTER.
+
+While it can be called from the cmdline, it is probably easiest to use via
+mappings.  Create mapping to call SkyBison, such as:
+
+nnoremap <leader>b :call SkyBison("b",1)<cr>
+nnoremap <leader>t :call SkyBison("tag",1)<cr>
+nnoremap <leader>e :call SkyBison("e",0)<cr>
+nnoremap <leader>h :call SkyBison("h",0)<cr>
