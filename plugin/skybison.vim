@@ -47,7 +47,7 @@ function! SkyBison(cmd,autoenter)
 				let &more = l:initmore
 				return 0
 			else
-				echo "Press <CR> or 1 to select \"".l:results[0]."\""
+				echo "Press <CR> to select \"".l:results[0]."\""
 			endif
 		endif
 		" get input from user
