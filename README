@@ -3,12 +3,16 @@ Will fill out more details later, just quick and dirty README for testing.
 SkyBison is a Vim plugin which expedites the usage of various cmdline commands
 which take one argument.  It takes advantage of Vim's built-in
 cmdline-completion to allow the user to select an argument for the command in
-relatively few keystrokes.  This can be compared to many buffer-management
-plugins, tag-management plugins, etc, except that (1) since it takes advantage
-of Vim's built-in cmdline-completion to do the heavy lifting, the code is
-relatively simple and clean, and (2) it is flexible enough to work with a wide
-variety of Vim's cmdline commands (as opposed to needing a plugin for every
-single command)
+relatively few keystrokes.  SkyBison compares the user's input to the possible
+arguments.  If only argument seems like a possible match (based on Vim's
+cmdline-completion), SkyBison will automatically accept it (or propose it and
+wait for the user to hit <CR>, depending on preference).
+
+This can be compared to many buffer-management plugins, tag-management plugins,
+etc, except that (1) since it takes advantage of Vim's built-in
+cmdline-completion to do the heavy lifting, the code is relatively simple and
+clean, and (2) it is flexible enough to work with a wide variety of Vim's
+cmdline commands (as opposed to needing a plugin for every single command).
 
 To install,  dump skybison.vim in ~/.vim/plugin (or if you use pathogen,
 ~/.vim/bundle/skybison/plugin/, or if you use something else, whatever that
