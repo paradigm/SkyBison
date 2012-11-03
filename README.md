@@ -81,10 +81,10 @@ SkyBison does not include any mappings by default (as there are far to many
 possibilities to expect to propose an option for all of them).  To create your
 own, place a mapping commands in your .vimrc/_vimrc, such as these:
 
-    nnoremap &lt;leader&gt;b :call SkyBison("b",1)&lt;cr&gt;
-    nnoremap &lt;leader&gt;t :call SkyBison("tag",1)&lt;cr&gt;
-    nnoremap &lt;leader&gt;e :call SkyBison("e",0)&lt;cr&gt;
-    nnoremap &lt;leader&gt;h :call SkyBison("h",0)&lt;cr&gt;
+    nnoremap <leader>b :call SkyBison("b",1)<cr>
+    nnoremap <leader>t :call SkyBison("tag",1)<cr>
+    nnoremap <leader>e :call SkyBison("e",0)<cr>
+    nnoremap <leader>h :call SkyBison("h",0)<cr>
 
 With those, &lt;leader&gt;b will call SkyBison to find an argument for :b,
 &lt;leader&gt;t will call SkyBison to find an argument for :tag, &lt;leader&gt;e will
