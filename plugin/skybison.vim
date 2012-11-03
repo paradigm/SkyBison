@@ -22,11 +22,18 @@ function! SkyBison(cmd,autoenter)
 	" build arg up from user input
 	let l:arg = ""
 	redraw
+        " if the cmd has an argument appended to it
+        if a:cmd =~ '\s\S\+$'
+          let prefix = matchstr(a:cmd, '^\zs.\+\ze\s') . ' '
+          let cmd = a:cmd
+        else
+          let cmd = a:cmd . ' '
+        endif
 	while 1
 		" Determine cmdline-completion options.  Huge thanks to ZyX-I for
 		" helping me do this so cleanly.
 		let d={}
-		execute "silent normal! :".a:cmd." ".l:arg."\<c-a>\<c-\>eextend(d, {'cmdline':getcmdline()}).cmdline\n"
+		execute "silent normal! :".cmd.l:arg."\<c-a>\<c-\>eextend(d, {'cmdline':getcmdline()}).cmdline\n"
 		if has_key(d, 'cmdline')
 			let l:results = split(strpart(d['cmdline'],stridx(d['cmdline'],' ')+1),'\\\@<! ')
 		else
@@ -43,8 +50,12 @@ function! SkyBison(cmd,autoenter)
 		elseif len(results) == 1
 			if a:autoenter
 				redraw
-				echo ":".a:cmd." ".l:results[0]
-				execute "silent ".a:cmd." ".l:results[0]
+				echo ":".cmd.l:results[0]
+                                if exists('prefix')
+                                  execute "silent ".prefix.l:results[0]
+                                else
+                                  execute "silent ".cmd.l:results[0]
+                                endif
 				let &more = l:initmore
 				return 0
 			else
@@ -53,9 +64,9 @@ function! SkyBison(cmd,autoenter)
 		endif
 		" get input from user
 		if l:ctrlv == 1
-			echo ":".a:cmd." ".l:arg."^"
+			echo ":".cmd.l:arg."^"
 		else
-			echo ":".a:cmd." ".l:arg
+			echo ":".cmd.l:arg
 		endif
 		let l:input = getchar()
 		if type(l:input) == 0
@@ -84,25 +95,44 @@ function! SkyBison(cmd,autoenter)
 					let l:arg = l:arg[:-2]
 				endwhile
 			elseif l:input == "\<tab>" || l:input == "\<c-l>"
-				execute "silent normal! :".a:cmd." ".l:arg."\<c-l>\<c-\>eextend(d, {'cmdline':getcmdline()}).cmdline\n"
+                                if exists('prefix')
+                                        let cmd = prefix
+                                endif
+				execute "silent normal! :".cmd.l:arg."\<c-l>\<c-\>eextend(d, {'cmdline':getcmdline()}).cmdline\n"
 				if has_key(d, 'cmdline')
 					let l:arg = strpart(d['cmdline'],stridx(d['cmdline'],' ')+1)
 				endif
 			elseif l:input == "\<cr>"
 				if len(l:results) == 1
-					echo ":".a:cmd." ".l:results[0]
-					execute "silent ".a:cmd." ".l:results[0]
+					echo ":".cmd.l:results[0]
+                                        if exists('prefix')
+                                          execute "silent ".prefix.l:results[0]
+                                        else
+                                          execute "silent ".cmd.l:results[0]
+                                        endif
 				else
-					echo ":".a:cmd." ".l:arg
-					execute "silent ".a:cmd." ".l:arg
+					echo ":".cmd.l:arg
+                                        if exists('prefix')
+                                          execute "silent ".prefix.l:results[0]
+                                        else
+                                          execute "silent ".cmd.l:results[0]
+                                        endif
 				endif
 				let &more = l:initmore
 				return 0
 			elseif l:input =~ "[1-9]" && len(results) >= l:input
 				let l:arg = l:results[l:input-1]
+                                if exists('prefix')
+                                        let cmd = prefix
+                                endif
 				if a:autoenter
-					echo ":".a:cmd." ".l:results[l:input-1]
-					execute "silent ".a:cmd." ".l:arg
+                                        if exists('prefix')
+                                          echo ":".prefix.l:results[l:input-1]
+                                          execute "silent ".prefix.l:arg
+                                        else
+                                          echo ":".cmd.l:results[l:input-1]
+                                          execute "silent ".cmd.l:results[0]
+                                        endif
 					let &more = l:initmore
 					return 0
 				endif
