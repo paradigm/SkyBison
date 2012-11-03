@@ -21,7 +21,7 @@ More specifically, SkyBison helps the user select an argument for various
 cmdline commands by comparing the user's input to acceptable arguments.  Once
 the user has input enough information to uniquely identify one argument,
 SkyBison will either immediately accept that argument or prompt the user to
-press &<cr&> to select that argument.  For example:
+press &lt;cr&gt; to select that argument.  For example:
 
 If Vim has three (listed) buffers, ".vimrc", ".bashrc" and ".zshrc", and the
 user calls SkyBison to find an argument for :b, the user will see the
@@ -33,7 +33,7 @@ following:
     :b 
 
 If the user inputs "v", SkyBison will recognize that the user wants ".vimrc"
-and select it (or prompt the user to hit &<cr&> to select it).  However, if the
+and select it (or prompt the user to hit &lt;cr&gt; to select it).  However, if the
 user inputs "s" (which is in both .bashrc and .zshrc, but not in .vimrc), the
 user will see the following:
 
@@ -81,25 +81,25 @@ SkyBison does not include any mappings by default (as there are far to many
 possibilities to expect to propose an option for all of them).  To create your
 own, place a mapping commands in your .vimrc/_vimrc, such as these:
 
-    nnoremap &<leader&>b :call SkyBison("b",1)&<cr&>
-    nnoremap &<leader&>t :call SkyBison("tag",1)&<cr&>
-    nnoremap &<leader&>e :call SkyBison("e",0)&<cr&>
-    nnoremap &<leader&>h :call SkyBison("h",0)&<cr&>
+    nnoremap &lt;leader&gt;b :call SkyBison("b",1)&lt;cr&gt;
+    nnoremap &lt;leader&gt;t :call SkyBison("tag",1)&lt;cr&gt;
+    nnoremap &lt;leader&gt;e :call SkyBison("e",0)&lt;cr&gt;
+    nnoremap &lt;leader&gt;h :call SkyBison("h",0)&lt;cr&gt;
 
-With those, &<leader&>b will call SkyBison to find an argument for :b,
-&<leader&>t will call SkyBison to find an argument for :tag, &<leader&>e will
-call SkyBison to find an argument for :e, and &<leader&>h will call SkyBison
+With those, &lt;leader&gt;b will call SkyBison to find an argument for :b,
+&lt;leader&gt;t will call SkyBison to find an argument for :tag, &lt;leader&gt;e will
+call SkyBison to find an argument for :e, and &lt;leader&gt;h will call SkyBison
 to find an argument for :h.  The second argument for the function determines
 whether or not SkyBison will automatically select an argument when there is
 only one possibility (1) or whether SkyBison should wait for the user to
-explicitly press &<cr&> (0).  With auto-&<cr&> in use, SkyBison can make selecting
+explicitly press &lt;cr&gt; (0).  With auto-&lt;cr&gt; in use, SkyBison can make selecting
 things extremely quickly.  For example, with the above mapping and the example
 in skybison-intro, the user could select .zshrc with only three keystrokes:
-"\bz".  If the user were to use a shorter mapping (e.g.: just &<space&> or
-&<cr&>), it'd only be two keystrokes.
+"\bz".  If the user were to use a shorter mapping (e.g.: just &lt;space&gt; or
+&lt;cr&gt;), it'd only be two keystrokes.
 
 For commands which take a file path as an argument (such as :e), it is
-recommended to set auto-&<cr&> to disabled (ie, second argument to the function
+recommended to set auto-&lt;cr&gt; to disabled (ie, second argument to the function
 should be 0) so that SkyBison does not select a directory when you want to
 select a file within that directory.  This is best understood through
 experiementation - give both it SkyBison("e",0) and SkyBison("e",1) a try.
@@ -110,17 +110,17 @@ Usage
 Once a mapping (as described in skybison-setup) is called, the user will see
 the what Vim considers as possible arguments.  From here, the user may:
 
-- Press &<esc&> to abort, akin to c_&<esc&>
+- Press &lt;esc&gt; to abort, akin to c_&lt;esc&gt;
 - Press ctrl-u to clear the thusfar entered text and start over, akin to
   c_ctrl-u
 - Press ctrl-w to remove the word behind the cursor, akin to c_ctrl-w
-- Press &<tab&> or ctrl-l to complete the shared part of the remaining possible
+- Press &lt;tab&gt; or ctrl-l to complete the shared part of the remaining possible
   arguments, akin to c_ctrl-l
-- Press &<cr&> to select the entered argument as-is, even if it does not match
+- Press &lt;cr&gt; to select the entered argument as-is, even if it does not match
   any argument Vim recognizes as a possibility.  This is useful for saving or
   editing a new file.
 - Press the number next to an option to select it
 - Enter another character to narrow down the possible argument.  When there is
   only one possibility remaining, SkyBison will either select it or prompt the
-  user to hit &<cr&> to select it, depending on preference set in
+  user to hit &lt;cr&gt; to select it, depending on preference set in
   skybison-setup.
