@@ -120,6 +120,9 @@ the what Vim considers as possible arguments.  From here, the user may:
   any argument Vim recognizes as a possibility.  This is useful for saving or
   editing a new file.
 - Press the number next to an option to select it
+- Press ctrl-v to literally insert the next character, bypassing the above
+  items.  Akin to c_ctrl-v.  For example, if one would like to enter the digit
+  "3" but not necessary select the third option, one could type &lt;c-v&gt;3.
 - Enter another character to narrow down the possible argument.  When there is
   only one possibility remaining, SkyBison will either select it or prompt the
   user to hit &lt;cr&gt; to select it, depending on preference set in
