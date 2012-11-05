@@ -104,6 +104,10 @@ should be 0) so that SkyBison does not select a directory when you want to
 select a file within that directory.  This is best understood through
 experiementation - give both it SkyBison("e",0) and SkyBison("e",1) a try.
 
+As of version 0.2, SkyBison also supports fuzzy matching.  To enable, simply
+add the following to your vimrc:
+
+    let g:skybison_fuzz = 1
 Usage
 -----
 
