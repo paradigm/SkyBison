@@ -12,20 +12,33 @@ plugins designed to make functionality such as :b and :tag more accessible.
 SkyBison is another attempt at tackling this problem.  It differs from other
 options in two key ways:
 1. It is intended to have a clean, simple and small code base.
-2. It is designed to support cmdline commands in general, and should work with
-   just about any cmdline command (that cmdline-completion supports).
-SkyBison achieves this by taking advantage of Vim's built-in support for
-cmdline-completion rather than attempting to recreate the wheel.
+2. It is designed to alleviate the awkwardness of the cmdline itself rather
+than targeting specific commands.  SkyBison has no code specifically for :b,
+for :tag, etc - it supports them as a side-effect of making the cmdline more
+comfortable.
 
-More specifically, SkyBison helps the user select an argument for various
-cmdline commands by comparing the user's input to acceptable arguments.  Once
-the user has input enough information to uniquely identify one argument,
-SkyBison will either immediately accept that argument or prompt the user to
-press &lt;cr&gt; to select that argument.  For example:
+More specifically, SkyBison alleviates three issues where the author felt Vim's
+cmdline was both obviously lacking during normal usage and easily capable of
+remedying:
+1. If Vim knows likely values for the term the user is typing (such as from its
+cmdline-completion), it should print them constantly.  It seems silly to
+require the user input c_ctrl-d when he or she wishes to see completion
+options when it could just show them all the time.
+2. If Vim (again through the cmdline-completion) narrows down the
+possibilities for the term the user is typing to a single one, it seems silly
+to require the user to hit c_ctrl-l or c_<tab> (or even worse, finish
+typing the whole thing) in order to accept it when the user enters c_<cr>.
+Vim already knows what is going on - just accept the term the user is in the
+process of typing.
+3. As an extension of (2) above, if Vim has a way of knowing the number of
+terms that will be on the cmdline, why have the user hit c_<cr> at all?  When
+only one possibility remains, skip the c-ctrl-lc_<cr> and immediate accept
+it.
+
+For example:
 
 If Vim has three (listed) buffers, ".vimrc", ".bashrc" and ".zshrc", and the
-user calls SkyBison to find an argument for :b, the user will see the
-following:
+user calls SkyBison("b "), the user will see the following:
 
     [1] .vimrc
     [2] .bashrc
@@ -33,7 +46,7 @@ following:
     :b 
 
 If the user inputs "v", SkyBison will recognize that the user wants ".vimrc"
-and select it (or prompt the user to hit &lt;cr&gt; to select it).  However, if the
+and select it (or prompt the user to hit <cr> to select it).  However, if the
 user inputs "s" (which is in both .bashrc and .zshrc, but not in .vimrc), the
 user will see the following:
 
@@ -47,12 +60,16 @@ in the remaining options.  Here, the user could enter "1" or "2" to select an
 option.  In fact, the user could have entered "1", "2" or "3" earlier to
 select a buffer when all three were possibilities.
 
-This works with any cmdline command which takes an argument and is supported
-by cmdline-completion: not just :b, but also :tag (for jumping to a tag),
-:e (for editing a file), :h (for help), amongst many others.
+This works wherever cmdline-completion works, including at a empty cmdline
+prompt and after :bar, including (but not limited to) :b for buffers,
+:tag (for jumping to a tag), :e (for editing a file), :h (for help), and
+many others.
 
 Setup
 -----
+
+Note that as of 0.3, SkyBison's configuration is slightly different from how it
+was in previous versions (as a result of added functionality).
 
 SkyBison can be installed like most other Vim plugins.  On a Unixy system
 without a plugin manager, the skybison.vim file should be located at:
@@ -77,57 +94,143 @@ for how to install skybison - it should be comparable to other plugins.
 If you would like the documentation to also be installed, include skybison.txt
 into the relevant directory described above, replacing "plugin" with "doc".
 
-SkyBison does not include any mappings by default (as there are far to many
-possibilities to expect to propose an option for all of them).  To create your
-own, place a mapping commands in your .vimrc/_vimrc, such as these:
+SkyBison can be called via:
 
-    nnoremap <leader>b :call SkyBison("b",1)<cr>
-    nnoremap <leader>t :call SkyBison("tag",1)<cr>
-    nnoremap <leader>e :call SkyBison("e",0)<cr>
-    nnoremap <leader>h :call SkyBison("h",0)<cr>
+    :call SkyBison({string})
 
-With those, &lt;leader&gt;b will call SkyBison to find an argument for :b,
-&lt;leader&gt;t will call SkyBison to find an argument for :tag, &lt;leader&gt;e will
-call SkyBison to find an argument for :e, and &lt;leader&gt;h will call SkyBison
-to find an argument for :h.  The second argument for the function determines
-whether or not SkyBison will automatically select an argument when there is
-only one possibility (1) or whether SkyBison should wait for the user to
-explicitly press &lt;cr&gt; (0).  With auto-&lt;cr&gt; in use, SkyBison can make selecting
-things extremely quickly.  For example, with the above mapping and the example
-in skybison-intro, the user could select .zshrc with only three keystrokes:
-"\bz".  If the user were to use a shorter mapping (e.g.: just &lt;space&gt; or
-&lt;cr&gt;), it'd only be two keystrokes.
+Where {string} is a string containing the characters you would like to be in
+the prompt when it starts.  Rather than going to the cmdline to run it, you
+could make a mapping, like so:
 
-For commands which take a file path as an argument (such as :e), it is
-recommended to set auto-&lt;cr&gt; to disabled (ie, second argument to the function
-should be 0) so that SkyBison does not select a directory when you want to
-select a file within that directory.  This is best understood through
-experiementation - give both it SkyBison("e",0) and SkyBison("e",1) a try.
+    nnoremap {keys} {count}:<c-u>call SkyBison({string})<cr>
 
-As of version 0.2, SkyBison also supports fuzzy matching.  To enable, simply
-add the following to your vimrc:
+Here, {keys} are the keys you would like to use to launch SkyBison, {count} is
+an optional number you could use to tell SkyBison how many terms to expect
+(at which it will automatically accept the cmdline without waiting for <cr>),
+and {string} is the same as it was above.
+
+Note: If you do not include {count} in the mapping, you can type it before you
+type the map {keys} to manually set it before each launch of SkyBison.  Or
+simply do not include or type it to opt out of the functionality if you do
+prefer to always have Vim wait for you to hit <cr>.
+
+For example:
+
+    nnoremap <leader>s :<c-u>call SkyBison("")<cr>
+
+Or, if you find you much prefer SkyBison to the normal cmdline, you could map
+it over the default:
+
+    nnoremap : :<c-u>call SkyBison("")<cr>
+
+Be sure you know another way to get to the cmdline, just in case there are
+problems with SkyBison.
+
+If you would like to further expedite access to specific cmdline commands, you
+can make mappings which launch SkyBison with the command already in the
+prompt.  For example:
+
+    nnoremap <leader>b 2:<c-u>call SkyBison("b ")<cr>
+    nnoremap <leader>t 2:<c-u>call SkyBison("tag ")<cr>
+    nnoremap <leader>h 2:<c-u>call SkyBison("h ")<cr>
+    nnoremap <leader>e :<c-u>call SkyBison("e ")<cr>
+
+Note: The space after the command is necessary to let SkyBison know to start
+looking for an argument for the command rather than to continue looking for
+possible commands.
+
+Note: For commands which browse the filesystem, such as :e, it is
+recommended not to include a {count} so that SkyBison does not immediately
+accept a directory when you want the argument to be a file in that directory.
+
+With those mappings:
+- &lt;leader&gt;b will call SkyBison to find an argument for :b (and immediately
+  accept once there you've uniquely identified a buffer),
+- &lt;leader&gt;t will call SkyBison to find an argument for :tag (and immediately
+  accept once there you've uniquely identified a buffer),
+- &lt;leader&gt;t will call SkyBison to find an argument for :help (and immediately
+  accept once there you've uniquely identified a buffer),
+- &lt;leader&gt;e will call SkyBison to find an argument for :e (but wait for the
+  user to hit &lt;cr&gt;)
+
+With the above mappings, if the user had several buffers open, but only one
+starting with "v", the user could select that buffer in three keystrokes:
+&lt;leader&gt;bv.  It could be further reduced to two keystrokes if a shorter
+mapping was used (e.g.: just &lt;space&gt; or &lt;cr&gt;)
+
+You can also include more than just the command in SkyBison's argument,
+but also a starting string, if you'd like.  For example, if you regularly edit
+files in ~/projects/, you could use the following:
+
+    nnoremap <leader>p :<c-u>call SkyBison("e ~/projects/")<cr>
+
+Moreover, you can have SkyBison take over from an in-progress cmdline, with a
+mapping like so:
+
+    cnoremap {keys} <c-r>SkyBison("")<cr><cr>
+
+where {keys} is replaced with what you want to type, such as "<c-l>"
+
+SkyBison also supports two variations of fuzzy matching.  To use no fuzzy
+matching, either set:
+
+    let g:skybison_fuzz = 0
+
+or simply leave that variable unset.  To use "full" fuzzy matching, where SkyBison
+will only care that the possible match includes the characters you've entered
+in order (irrelevant of what is or is not between them, set:
 
     let g:skybison_fuzz = 1
+
+To use substring matching, where SkyBison will ignore characters before and
+after the string you've entered, but require that all of the characters you've
+entered are available in the possible match in order with nothing in between
+them, set:
+
+    let g:skybison_fuzz = 2
+
 Usage
 -----
 
 Once a mapping (as described in skybison-setup) is called, the user will see
-the what Vim considers as possible arguments.  From here, the user may:
+the what Vim considers as possible arguments to the current cmdline's prompt.
+From here, the user may:
 
-- Press &lt;esc&gt; to abort, akin to c_&lt;esc&gt;
-- Press ctrl-u to clear the thusfar entered text and start over, akin to
-  c_ctrl-u
+- Press <esc> to abort, akin to c_<esc>
+- Press ctrl-u to clear prompt, akin to c_ctrl-u
 - Press ctrl-w to remove the word behind the cursor, akin to c_ctrl-w
-- Press &lt;tab&gt; or ctrl-l to complete the shared part of the remaining possible
-  arguments, akin to c_ctrl-l
-- Press &lt;cr&gt; to select the entered argument as-is, even if it does not match
-  any argument Vim recognizes as a possibility.  This is useful for saving or
-  editing a new file.
+- Press <tab> or ctrl-l to complete the shared part of the last term, akin to
+  c_ctrl-l
 - Press the number next to an option to select it
 - Press ctrl-v to literally insert the next character, bypassing the above
-  items.  Akin to c_ctrl-v.  For example, if one would like to enter the digit
-  "3" but not necessary select the third option, one could type &lt;c-v&gt;3.
-- Enter another character to narrow down the possible argument.  When there is
-  only one possibility remaining, SkyBison will either select it or prompt the
-  user to hit &lt;cr&gt; to select it, depending on preference set in
-  skybison-setup.
+  items.  Akin to c_ctrl-v.  For example, if one would like to enter the
+  digit "3" but not necessary select the third option, one could type <c-v>3.
+- Press <cr>.  If SkyBison recognizes only one possible value for the last
+  term (and ctrl-v was not just pressed), SkyBison will substitute that value
+  in for the last term and run the cmdline.  If either ctrl-v just pressed or
+  SkyBison sees either no value completions or more than one completion for
+  the last term, SkyBison will simply execute the cmdline as it is.
+- Enter another character.  This could serve to narrow down the possible
+  values for the last term or simply be new content unrelated to completion
+  (such as using :e on a new file).
+
+Due to the way SkyBison parses possible options from Vim's cmdline-completion,
+items with non-escaped spaces in them will appear as multiple items, split at
+the whitespace.  To select one, give enough information to uniquely identify
+the first part of it, then use either ctrl-l or &lt;tab&gt; and SkyBison will
+fill out the rest, at which point you can hit &lt;cr&gt;.
+
+Changelog
+---------
+
+0.3 (2012-11-05):
+ - generalized to work with commands with less than or more than one argument
+   in addition to just one argument
+ - changed how autoenter is indicated such that it can be called on the fly
+ - support running from the cmdline
+ - substring matching
+0.2 (2012-11-04):
+ - changed output system to one which no longer flickers/shakes
+ - fuzzy matching
+0.1 (2012-10-31):
+ - initial release
