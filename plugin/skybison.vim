@@ -107,6 +107,10 @@ function SkyBison(initcmdline)
 	setlocal nonumber
 	setlocal nocursorline
 	setlocal nocursorcolumn
+	syntax match LineNr /^\d/
+	syntax match MoreMsg /^-.*/
+	syntax match Comment /^\[.*/
+	syntax match NONE /^:.*/
 
 	" initialize other variables
 	let l:cmdline = a:initcmdline
@@ -116,8 +120,8 @@ function SkyBison(initcmdline)
 	while 1
 		" if desired, fuzz the last item of the cmdline
 		let l:fuzzed_cmdline = l:cmdline
+		let l:fuzzed_argument = s:GetLastTerm(l:cmdline)
 		if exists("g:skybison_fuzz")
-			let l:fuzzed_argument = s:GetLastTerm(l:cmdline)
 			if g:skybison_fuzz == 1
 				" full fuzzing - asterisk between every character
 				let l:fuzzed_argument = substitute(l:fuzzed_argument,'.','*&','g')
@@ -136,7 +140,19 @@ function SkyBison(initcmdline)
 			" append fuzzed argument to the cmdline
 			let l:fuzzed_cmdline = s:StripLastTerm(l:cmdline).l:fuzzed_argument
 		endif
-		
+
+		" highlight prompt in results
+		syntax clear Identifier
+		if l:fuzzed_argument != ''
+			" escape backslashes
+			let l:escaped_argument = substitute(l:fuzzed_argument,'\\','\\\\','g')
+			" remove leading asterisk
+			let l:escaped_argument = substitute(l:escaped_argument,'^\*','','g')
+			" convert remaining globbing-style asterisks to regex-style
+			let l:escaped_argument = substitute(l:escaped_argument,'*','\\.\\*','g')
+			execute 'syntax match Identifier /\V\c'.l:escaped_argument.'/'
+		endif
+
 		" get current completion results
 		let l:results = s:GetCmdlineCompletionResults(l:fuzzed_cmdline)
 
@@ -148,7 +164,7 @@ function SkyBison(initcmdline)
 			let l:linenumber+=1
 		endif
 		for l:result in l:results[0:8]
-			call setline(l:linenumber,"[".l:counter."] ".l:result)
+			call setline(l:linenumber,l:counter." ".l:result)
 			let l:linenumber+=1
 			let l:counter+=1
 		endfor
