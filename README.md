@@ -167,7 +167,7 @@ files in ~/projects/, you could use the following:
 Moreover, you can have SkyBison take over from an in-progress cmdline, with a
 mapping like so:
 
-    cnoremap {keys} <c-r>SkyBison("")<cr><cr>
+    cnoremap {keys} <c-r>=SkyBison("")<cr><cr>
 
 where {keys} is replaced with what you want to type, such as "<c-l>"
 
