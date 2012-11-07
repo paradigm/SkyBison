@@ -231,15 +231,20 @@ or <tab> and SkyBison will fill out the rest, at which point you can hit <cr>.
 ==============================================================================
 4. Changelog                                              *skybison-changelog*
 
+0.4 (2012-11-07):
+ - added syntax highlighting
+
 0.3 (2012-11-05):
  - generalized to work with commands with less than or more than one argument
    in addition to just one argument
  - changed how autoenter is indicated such that it can be called on the fly
  - support running from the cmdline
  - substring matching
+
 0.2 (2012-11-04):
  - changed output system to one which no longer flickers/shakes
  - fuzzy matching
+
 0.1 (2012-10-31):
  - initial release
 
