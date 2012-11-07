@@ -196,16 +196,16 @@ Once a mapping (as described in skybison-setup) is called, the user will see
 the what Vim considers as possible arguments to the current cmdline's prompt.
 From here, the user may:
 
-- Press <esc> to abort, akin to c_<esc>
+- Press &lt;esc&gt; to abort, akin to c_&lt;esc&gt;
 - Press ctrl-u to clear prompt, akin to c_ctrl-u
 - Press ctrl-w to remove the word behind the cursor, akin to c_ctrl-w
-- Press <tab> or ctrl-l to complete the shared part of the last term, akin to
+- Press &lt;tab&gt; or ctrl-l to complete the shared part of the last term, akin to
   c_ctrl-l
 - Press the number next to an option to select it
 - Press ctrl-v to literally insert the next character, bypassing the above
   items.  Akin to c_ctrl-v.  For example, if one would like to enter the
-  digit "3" but not necessary select the third option, one could type <c-v>3.
-- Press <cr>.  If SkyBison recognizes only one possible value for the last
+  digit "3" but not necessary select the third option, one could type &lt;c-v&gt;3.
+- Press &lt;cr&gt;.  If SkyBison recognizes only one possible value for the last
   term (and ctrl-v was not just pressed), SkyBison will substitute that value
   in for the last term and run the cmdline.  If either ctrl-v just pressed or
   SkyBison sees either no value completions or more than one completion for
