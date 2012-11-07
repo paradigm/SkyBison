@@ -40,7 +40,7 @@ function SkyBison(initcmdline)
 	endif
 
 	" use try/catch to make sure we always properly clean up
-	"try
+	try
 
 	" set and save global settings to restore on exit
 	let s:initlaststatus = &laststatus
