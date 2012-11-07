@@ -117,6 +117,7 @@ function SkyBison(initcmdline)
 	syntax match MoreMsg /^-.*/
 	syntax match Comment /^\[.*/
 	syntax match NONE /^:.*/
+	syntax match Comment /^:.*\zs_$/
 
 	" initialize other variables
 	let l:cmdline = a:initcmdline
