@@ -61,7 +61,11 @@ function s:StripLastTerm(cmdline)
 endfunction
 
 function s:GetLastTerm(cmdline)
-	return strpart(a:cmdline,strlen(s:StripLastTerm(a:cmdline)))
+	let l:lastterm = strpart(a:cmdline,strlen(s:StripLastTerm(a:cmdline)))
+	if l:lastterm[:0] == " "
+		let l:lastterm = l:lastterm[1:]
+	endif
+	return l:lastterm
 endfunction
 
 function s:GetTermCount(cmdline)
@@ -140,7 +144,7 @@ function SkyBison(initcmdline)
 			let l:fuzzed_argument = substitute(l:fuzzed_argument,'/\*\.','/.','g')
 			let l:fuzzed_argument = substitute(l:fuzzed_argument,'\*|','|','g')
 			" append fuzzed argument to the cmdline
-			let l:fuzzed_cmdline = s:StripLastTerm(l:cmdline).l:fuzzed_argument
+			let l:fuzzed_cmdline = s:StripLastTerm(l:cmdline).' '.l:fuzzed_argument
 		endif
 
 		" highlight prompt in results
@@ -151,13 +155,12 @@ function SkyBison(initcmdline)
 			" escape forwardslashes
 			let l:escaped_argument = substitute(l:escaped_argument,'/','\\/','g')
 			" remove leading asterisk
-			if l:escaped_argument[:1] == " *"
-				let l:escaped_argument = l:escaped_argument[2:]
+			if l:escaped_argument[:0] == "*"
+				let l:escaped_argument = l:escaped_argument[1:]
 			endif
 			" convert remaining globbing-style asterisks to regex-style
 			let l:escaped_argument = substitute(l:escaped_argument,'*','\\.\\*','g')
 			execute 'syntax match Identifier /\V\c'.l:escaped_argument.'/'
-			echo ":".l:escaped_argument.":"
 		endif
 
 		" get current completion results
