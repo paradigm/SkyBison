@@ -223,6 +223,9 @@ fill out the rest, at which point you can hit &lt;cr&gt;.
 Changelog
 ---------
 
+0.5 (2012-11-07):
+ - refactored code, slight cleaner and faster
+
 0.4 (2012-11-07):
  - added syntax highlighting
 
