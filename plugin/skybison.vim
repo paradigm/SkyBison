@@ -1,6 +1,6 @@
 " Vim plugin to expidite use of cmdline commands
 " Maintainer: Daniel Thau (paradigm@bedrocklinux.org)
-" Version: 0.3
+" Version: 0.4
 " Description: SkyBison is a Vim plugin used to expedite the use of cmdline.
 " Last Change: 2012-11-05
 " Location: plugin/SkyBison.vim
