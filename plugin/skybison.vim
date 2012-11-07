@@ -51,8 +51,10 @@ function s:GetCCtrlLResult(cmdline)
 endfunction
 
 function s:StripLastTerm(cmdline)
-	if a:cmdline =~ '\\\@<! '
-		return substitute(a:cmdline,'\\\@<! .*$',' ','')
+	if a:cmdline[-1:] == ' ' && a:cmdline[-2:] != '\\ '
+		return a:cmdline[:-2]
+	elseif a:cmdline =~ '\\\@<! '
+		return join(split(a:cmdline,'\\\@<! ')[:-2])
 	else
 		return ''
 	endif
@@ -146,11 +148,16 @@ function SkyBison(initcmdline)
 		if l:fuzzed_argument != ''
 			" escape backslashes
 			let l:escaped_argument = substitute(l:fuzzed_argument,'\\','\\\\','g')
+			" escape forwardslashes
+			let l:escaped_argument = substitute(l:escaped_argument,'/','\\/','g')
 			" remove leading asterisk
-			let l:escaped_argument = substitute(l:escaped_argument,'^\*','','g')
+			if l:escaped_argument[:1] == " *"
+				let l:escaped_argument = l:escaped_argument[2:]
+			endif
 			" convert remaining globbing-style asterisks to regex-style
 			let l:escaped_argument = substitute(l:escaped_argument,'*','\\.\\*','g')
 			execute 'syntax match Identifier /\V\c'.l:escaped_argument.'/'
+			echo ":".l:escaped_argument.":"
 		endif
 
 		" get current completion results
