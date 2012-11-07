@@ -1,8 +1,8 @@
 " Vim plugin to expidite use of cmdline commands
 " Maintainer: Daniel Thau (paradigm@bedrocklinux.org)
-" Version: 0.4
+" Version: 0.5
 " Description: SkyBison is a Vim plugin used to expedite the use of cmdline.
-" Last Change: 2012-11-05
+" Last Change: 2012-11-07
 " Location: plugin/SkyBison.vim
 " Website: https://github.com/paradigm/skybison
 "
@@ -13,9 +13,9 @@ if exists('g:skybison_loaded')
 endif
 let g:skybison_loaded = 1
 
+" Runs command and cleans up to prepare to quit
 function s:RunCommandAndQuit(cmdline)
 	" reset changed settings
-	let &more = s:initmore
 	let &laststatus = s:initlaststatus
 	bdelete!
 	execute s:initwinnr."wincmd w"
@@ -23,59 +23,6 @@ function s:RunCommandAndQuit(cmdline)
 	" run command and quit
 	execute a:cmdline
 	return 0
-endfunction
-
-" Determine cmdline-completion options.  Huge thanks to ZyX-I for
-" helping me do this so cleanly.
-function s:GetCmdlineCompletionResults(cmdline)
-	let l:termcount = s:GetTermCount(a:cmdline)
-	let l:d={}
-	execute "silent normal! :".a:cmdline."\<c-a>\<c-\>eextend(l:d, {'cmdline':getcmdline()}).cmdline\n"
-	if has_key(l:d, 'cmdline') && l:d['cmdline'] !~ ''
-		return split(l:d['cmdline'],'\\\@<! ')[l:termcount-1:]
-	else
-		return []
-	endif
-endfunction
-
-" Get c_ctrl-l response.  Again, Huge thanks to ZyX-I for helping me do this
-" so cleanly.
-function s:GetCCtrlLResult(cmdline)
-	let l:d={}
-	execute "silent normal! :".a:cmdline."\<c-l>\<c-\>eextend(d, {'cmdline':getcmdline()}).cmdline\n"
-	if has_key(l:d, 'cmdline')
-		return l:d['cmdline']
-	else
-		return a:cmdline
-	endif
-endfunction
-
-function s:StripLastTerm(cmdline)
-	if a:cmdline[-1:] == ' ' && a:cmdline[-2:] != '\\ '
-		return a:cmdline[:-2]
-	elseif a:cmdline =~ '\\\@<! '
-		return join(split(a:cmdline,'\\\@<! ')[:-2])
-	else
-		return ''
-	endif
-endfunction
-
-function s:GetLastTerm(cmdline)
-	let l:lastterm = strpart(a:cmdline,strlen(s:StripLastTerm(a:cmdline)))
-	if l:lastterm[:0] == " "
-		let l:lastterm = l:lastterm[1:]
-	endif
-	return l:lastterm
-endfunction
-
-function s:GetTermCount(cmdline)
-	let l:termcount = 0
-	let l:nextstart = 0
-	while l:nextstart != -1
-		let l:nextstart = match(a:cmdline,'\\\@<! ',l:nextstart+1)
-		let l:termcount += 1
-	endwhile
-	return l:termcount
 endfunction
 
 " main function
@@ -96,8 +43,6 @@ function SkyBison(initcmdline)
 	try
 
 	" set and save global settings to restore on exit
-	let s:initmore = &more
-	let &more = 0
 	let s:initlaststatus = &laststatus
 	let &laststatus = 0
 	let s:initwinnr = winnr()
@@ -110,14 +55,19 @@ function SkyBison(initcmdline)
 		call setline(l:linenumber,"")
 	endfor
 	nohlsearch
-	setlocal nonumber
-	setlocal nocursorline
 	setlocal nocursorcolumn
-	syntax match LineNr /^\d/
+	setlocal nocursorline
+	setlocal nonumber
+	setlocal nowrap
+	setlocal virtualedit=all
+	" line numbering on left
+	syntax match LineNr  /^\d/
+	" -- more -- message
 	syntax match MoreMsg /^-.*/
+	" [No Results] message
 	syntax match Comment /^\[.*/
-	syntax match NONE /^:.*/
-	syntax match Comment /^:.*\zs_$/
+	" prompt cursor
+	syntax match Comment /^:.*_$/hs=e
 
 	" initialize other variables
 	let l:cmdline = a:initcmdline
@@ -125,49 +75,81 @@ function SkyBison(initcmdline)
 
 	" main loop
 	while 1
-		" if desired, fuzz the last item of the cmdline
-		let l:fuzzed_cmdline = l:cmdline
-		let l:fuzzed_argument = s:GetLastTerm(l:cmdline)
-		if exists("g:skybison_fuzz")
-			if g:skybison_fuzz == 1
-				" full fuzzing - asterisk between every character
-				let l:fuzzed_argument = substitute(l:fuzzed_argument,'.','*&','g')
-			elseif g:skybison_fuzz == 2
-				" substring-match - just start groups of wordchars with
-				" an asterisks
-				let l:fuzzed_argument = substitute(l:fuzzed_argument,'\w\+','*&','g')
-			end
-			" asterisks break some corner cases - ensure we don't hit those
-			if l:fuzzed_argument[0:1] == "*/"
-				let l:fuzzed_argument = l:fuzzed_argument[1:]
-			endif
-			let l:fuzzed_argument = substitute(l:fuzzed_argument,'*\.\*\.','..','g')
-			let l:fuzzed_argument = substitute(l:fuzzed_argument,'/\*\.','/.','g')
-			let l:fuzzed_argument = substitute(l:fuzzed_argument,'\*|','|','g')
-			" append fuzzed argument to the cmdline
-			let l:fuzzed_cmdline = s:StripLastTerm(l:cmdline).' '.l:fuzzed_argument
+		" get various aspects of the current cmdline - makes later
+		" calculations easier
+		" get the cmdline as a list of terms
+		let l:cmdline_terms = split(l:cmdline,'\\\@<!\s\+')
+		if l:cmdline[-1:] == ' '
+			call add(l:cmdline_terms,'')
+		endif
+		" a string containing all the cmdline terms but the last
+		let l:cmdline_head = join(l:cmdline_terms[0:-2])
+		" the last cmdline term as a string
+		if len(l:cmdline_terms) > 0
+			let l:cmdline_tail = l:cmdline_terms[-1]
+		else
+			let l:cmdline_tail = ""
 		endif
 
-		" highlight prompt in results
+		" fuzz the cmdline
+		if exists("g:skybison_fuzz") && g:skybison_fuzz == 1
+			" full fuzzing
+			" throw an asterisk between every character
+			let l:fuzzed_tail = substitute(l:cmdline_tail,'.','*&','g')
+		elseif exists('g:skybison_fuzz') && g:skybison_fuzz == 2
+			" substring match
+			" prefix groups of wordchars with an asterisk
+			let l:fuzzed_tail = substitute(l:cmdline_tail,'\w\+','*&','g')
+		else
+			" no fuzzing
+			let l:fuzzed_tail = l:cmdline_tail
+		endif
+		" asterisks break some corner cases - ensure we don't hit those
+		if l:fuzzed_tail[0:1] == '*/'
+			let l:fuzzed_tail = l:fuzzed_tail[1:]
+		endif
+		let l:fuzzed_tail = substitute(l:fuzzed_tail,'*\.\*\.','..','g')
+		let l:fuzzed_tail = substitute(l:fuzzed_tail,'/\*\.','/.','g')
+		let l:fuzzed_tail = substitute(l:fuzzed_tail,'\*|','|','g')
+		" build fuzzed cmdline from fuzzed_tail
+		if l:cmdline_head != ''
+			let l:fuzzed_cmdline = l:cmdline_head .' '.l:fuzzed_tail
+		elseif l:cmdline_tail != ''
+			let l:fuzzed_cmdline = l:fuzzed_tail
+		else
+			let l:fuzzed_cmdline = ''
+		endif
+
+		" highlight cmdline_tail in results
 		syntax clear Identifier
-		if l:fuzzed_argument != ''
-			" escape backslashes
-			let l:escaped_argument = substitute(l:fuzzed_argument,'\\','\\\\','g')
-			" escape forwardslashes
-			let l:escaped_argument = substitute(l:escaped_argument,'/','\\/','g')
+		if l:fuzzed_tail != ''
+			" escape slashes
+			let l:escaped_tail = substitute(l:fuzzed_tail,'\\\|/','\\&','g')
 			" remove leading asterisk
-			if l:escaped_argument[:0] == "*"
-				let l:escaped_argument = l:escaped_argument[1:]
+			if l:escaped_tail[:0] == "*"
+				let l:escaped_tail = l:escaped_tail[1:]
 			endif
 			" convert remaining globbing-style asterisks to regex-style
-			let l:escaped_argument = substitute(l:escaped_argument,'*','\\.\\*','g')
-			execute 'syntax match Identifier /\V\c'.l:escaped_argument.'/'
+			let l:escaped_tail = substitute(l:escaped_tail,'*','\\.\\*','g')
+			" syntax highlight
+			execute 'syntax match Identifier /\V\c'.l:escaped_tail.'/'
 		endif
 
-		" get current completion results
-		let l:results = s:GetCmdlineCompletionResults(l:fuzzed_cmdline)
+		" Determine cmdline-completion options.  Huge thanks to ZyX-I for
+		" helping me do this so cleanly.
+		let l:d={}
+		execute "silent normal! :".l:fuzzed_cmdline."\<c-a>\<c-\>eextend(l:d, {'cmdline':getcmdline()}).cmdline\n"
+		" If l:d was given the key 'cmdline', that will be the cmdline output
+		" from c_ctrl-a.  If that is the case, strip the non-completion terms.
+		" Otherwise, there was no completion - return an empty list.
+		if has_key(l:d, 'cmdline') && l:d['cmdline'] !~ ''
+			let l:results = split(l:d['cmdline'],'\\\@<!\s\+')[abs(len(l:cmdline_terms)-1):]
+		else
+			let l:results = []
+		endif
 
 		" output
+		" clear buffer
 		%normal D
 		let l:counter = 1
 		let l:linenumber = 10-len(l:results[0:8])
@@ -182,8 +164,8 @@ function SkyBison(initcmdline)
 		if len(l:results) == 0
 			call setline(10,"[No Results]")
 		elseif len(l:results) == 1
-			if s:GetTermCount(l:cmdline) == v:count
-				return s:RunCommandAndQuit(s:StripLastTerm(l:cmdline).l:results[0])
+			if len(l:cmdline_terms) == v:count && v:count != 0
+				return s:RunCommandAndQuit(l:cmdline_head.' '.l:results[0])
 			else
 				if l:ctrlv
 					call setline(10,'Press <CR> to run cmdline as entered')
@@ -203,7 +185,6 @@ function SkyBison(initcmdline)
 
 		" get input from user
 		let l:input = getchar()
-		echo ""
 		if type(l:input) == 0
 			let l:input = nr2char(l:input)
 		endif
@@ -226,7 +207,7 @@ function SkyBison(initcmdline)
 		elseif l:input == "\<c-u>"
 			let l:cmdline = ""
 		elseif l:input == "\<c-w>"
-			if l:cmdline[-1:] == ""
+			if l:cmdline[-1:] == " "
 				let l:cmdline = l:cmdline[:-2]
 			endif
 			while strlen(l:cmdline) > 0 && l:cmdline[-1:] != " "
@@ -234,20 +215,25 @@ function SkyBison(initcmdline)
 			endwhile
 		elseif l:input == "\<tab>" || l:input == "\<c-l>"
 			if len(l:results) > 0
-				let l:cmdline = s:GetCCtrlLResult(l:fuzzed_cmdline)
+				let l:d={}
+				" Huge thanks to ZyX-I for this line as well
+				execute "silent normal! :".l:fuzzed_cmdline."\<c-l>\<c-\>eextend(d, {'cmdline':getcmdline()}).cmdline\n"
+				let l:cmdline = l:d['cmdline']
 			endif
 		elseif l:input == "\<cr>"
 			if len(l:results) == 1
-				return s:RunCommandAndQuit(s:StripLastTerm(l:cmdline).l:results[0])
+				return s:RunCommandAndQuit(l:cmdline_head.' '.l:results[0])
 			else
 				return s:RunCommandAndQuit(l:cmdline)
 			endif
 		elseif l:input =~ "[1-9]" && len(l:results) >= l:input
-			let l:cmdline = s:StripLastTerm(l:cmdline).l:results[l:input-1]
+			let l:cmdline = l:cmdline_head.' '.l:results[l:input-1]
 		else
 			let l:cmdline.=l:input
 		endif
+
 	endwhile
+
 	catch
 	endtry
 	" If we get here, either the user hit ctrl-c or there was some other
