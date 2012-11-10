@@ -59,7 +59,6 @@ function SkyBison(initcmdline)
 	setlocal nocursorline
 	setlocal nonumber
 	setlocal nowrap
-	setlocal virtualedit=all
 	" line numbering on left
 	syntax match LineNr  /^\d/
 	" -- more -- message
