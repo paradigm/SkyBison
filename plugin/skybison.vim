@@ -98,7 +98,7 @@ function SkyBison(initcmdline)
 		elseif exists('g:skybison_fuzz') && g:skybison_fuzz == 2
 			" substring match
 			" prefix groups of wordchars with an asterisk
-			let l:fuzzed_tail = substitute(l:cmdline_tail,'\w\+','*&','g')
+			let l:fuzzed_tail = substitute(l:cmdline_tail,'[^/]\+','*&','g')
 		else
 			" no fuzzing
 			let l:fuzzed_tail = l:cmdline_tail
