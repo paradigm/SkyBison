@@ -104,7 +104,7 @@ function SkyBison(initcmdline)
 			let l:fuzzed_tail = l:cmdline_tail
 		endif
 		" asterisks break some corner cases - ensure we don't hit those
-		if l:fuzzed_tail[0:1] == '*/'
+		if l:fuzzed_tail[0:1] == '*/' || l:fuzzed_tail[0:1] == '*.'
 			let l:fuzzed_tail = l:fuzzed_tail[1:]
 		endif
 		let l:fuzzed_tail = substitute(l:fuzzed_tail,'*\.\*\.','..','g')
