@@ -149,7 +149,7 @@ function SkyBison(initcmdline)
 
 		" output
 		" clear buffer
-		%normal D
+		%normal "_D
 		let l:counter = 1
 		let l:linenumber = 10-len(l:results[0:8])
 		if len(l:results) > 1 && len(l:results) < 10
