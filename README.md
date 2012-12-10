@@ -30,13 +30,13 @@ require the user input c_ctrl-d when he or she wishes to see completion
 options when it could just show them all the time.
 2. If Vim (again through the cmdline-completion) narrows down the
 possibilities for the term the user is typing to a single one, it seems silly
-to require the user to hit c_ctrl-l or c_<tab> (or even worse, finish
-typing the whole thing) in order to accept it when the user enters c_<cr>.
+to require the user to hit c_ctrl-l or c_&lt;tab&gt; (or even worse, finish
+typing the whole thing) in order to accept it when the user enters c_&lt;cr&gt;.
 Vim already knows what is going on - just accept the term the user is in the
 process of typing.
 3. As an extension of (2) above, if Vim has a way of knowing the number of
-terms that will be on the cmdline, why have the user hit c_<cr> at all?  When
-only one possibility remains, skip the c-ctrl-lc_<cr> and immediate accept
+terms that will be on the cmdline, why have the user hit c_&lt;cr&gt; at all?  When
+only one possibility remains, skip the c-ctrl-lc_&lt;cr&gt; and immediate accept
 it.
 
 For example:
@@ -50,7 +50,7 @@ user calls SkyBison("b "), the user will see the following:
     :b 
 
 If the user inputs "v", SkyBison will recognize that the user wants ".vimrc"
-and select it (or prompt the user to hit <cr> to select it).  However, if the
+and select it (or prompt the user to hit &lt;cr&gt; to select it).  However, if the
 user inputs "s" (which is in both .bashrc and .zshrc, but not in .vimrc), the
 user will see the following:
 
@@ -110,13 +110,13 @@ could make a mapping, like so:
 
 Here, {keys} are the keys you would like to use to launch SkyBison, {count} is
 an optional number you could use to tell SkyBison how many terms to expect
-(at which it will automatically accept the cmdline without waiting for <cr>),
+(at which it will automatically accept the cmdline without waiting for &lt;cr&gt;),
 and {string} is the same as it was above.
 
 Note: If you do not include {count} in the mapping, you can type it before you
 type the map {keys} to manually set it before each launch of SkyBison.  Or
 simply do not include or type it to opt out of the functionality if you do
-prefer to always have Vim wait for you to hit <cr>.
+prefer to always have Vim wait for you to hit &lt;cr&gt;.
 
 For example:
 
