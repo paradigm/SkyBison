@@ -1,8 +1,8 @@
 " Vim plugin to expidite use of cmdline commands
 " Maintainer: Daniel Thau (paradigm@bedrocklinux.org)
-" Version: 0.5
+" Version: 0.6
 " Description: SkyBison is a Vim plugin used to expedite the use of cmdline.
-" Last Change: 2012-11-07
+" Last Change: 2012-12-18
 " Location: plugin/SkyBison.vim
 " Website: https://github.com/paradigm/skybison
 "
@@ -38,6 +38,10 @@ function SkyBison(initcmdline)
 		echoerr "Insufficient lines for SkyBison output"
 		return 0
 	endif
+
+	" store v:count here, before any :normal commands are run which could
+	" potentially change it.
+	let l:vcount = v:count
 
 	" use try/catch to make sure we always properly clean up
 	try
@@ -163,7 +167,7 @@ function SkyBison(initcmdline)
 		if len(l:results) == 0
 			call setline(10,"[No Results]")
 		elseif len(l:results) == 1
-			if len(l:cmdline_terms) == v:count && v:count != 0
+			if len(l:cmdline_terms) == l:vcount && l:vcount != 0
 				return s:RunCommandAndQuit(l:cmdline_head.' '.l:results[0])
 			else
 				if l:ctrlv
