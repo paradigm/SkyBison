@@ -156,7 +156,7 @@ With those mappings:
   accept once there you've uniquely identified a buffer),
 - <leader>t will call SkyBison to find an argument for |:tag| (and immediately
   accept once there you've uniquely identified a buffer),
-- <leader>t will call SkyBison to find an argument for |:help| (and immediately
+- <leader>h will call SkyBison to find an argument for |:help| (and immediately
   accept once there you've uniquely identified a buffer),
 - <leader>e will call SkyBison to find an argument for |:e| (but wait for the
   user to hit <cr>)
