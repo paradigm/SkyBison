@@ -152,7 +152,7 @@ With those mappings:
   accept once there you've uniquely identified a buffer),
 - &lt;leader&gt;t will call SkyBison to find an argument for :tag (and immediately
   accept once there you've uniquely identified a buffer),
-- &lt;leader&gt;t will call SkyBison to find an argument for :help (and immediately
+- &lt;leader&gt;h will call SkyBison to find an argument for :help (and immediately
   accept once there you've uniquely identified a buffer),
 - &lt;leader&gt;e will call SkyBison to find an argument for :e (but wait for the
   user to hit &lt;cr&gt;)
