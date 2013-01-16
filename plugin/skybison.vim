@@ -63,6 +63,9 @@ function SkyBison(initcmdline)
 	setlocal nocursorline
 	setlocal nonumber
 	setlocal nowrap
+	if exists("&relativenumber")
+		setlocal norelativenumber
+	endif
 	" line numbering on left
 	syntax match LineNr  /^\d/
 	" -- more -- message
