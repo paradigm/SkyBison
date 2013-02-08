@@ -202,7 +202,7 @@ function SkyBison(initcmdline)
 			end
 			let l:ctrlv = 0
 			let l:cmdline.=l:input
-		elseif l:input == "\<esc>"
+		elseif l:input == "\<esc>" || l:input == "\<c-c>"
 			return s:RunCommandAndQuit("")
 		elseif l:input == "\<c-v>"
 			let l:ctrlv = 1
