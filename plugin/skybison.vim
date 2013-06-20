@@ -1,8 +1,8 @@
 " Vim plugin to expidite use of cmdline commands
 " Maintainer: Daniel Thau (paradigm@bedrocklinux.org)
-" Version: 0.6
+" Version: 0.7
 " Description: SkyBison is a Vim plugin used to expedite the use of cmdline.
-" Last Change: 2012-12-18
+" Last Change: 2013-06-19
 " Location: plugin/SkyBison.vim
 " Website: https://github.com/paradigm/skybison
 "
@@ -20,8 +20,12 @@ function s:RunCommandAndQuit(cmdline)
 	bdelete!
 	execute s:initwinnr."wincmd w"
 	redraw
-	" run command and quit
+
+	" run command, add to history and quit
 	execute a:cmdline
+	if a:cmdline != ""
+		call histadd(':', a:cmdline)
+	endif
 	return 0
 endfunction
 
@@ -78,6 +82,8 @@ function SkyBison(initcmdline)
 	" initialize other variables
 	let l:cmdline = a:initcmdline
 	let l:ctrlv = 0
+	let l:histnr = histnr(':') + 1
+	let l:cmdline_newest = ""
 
 	" main loop
 	while 1
@@ -231,6 +237,22 @@ function SkyBison(initcmdline)
 				return s:RunCommandAndQuit(l:cmdline_head.' '.l:results[0])
 			else
 				return s:RunCommandAndQuit(l:cmdline)
+			endif
+		elseif l:input == "\<c-p>" || l:input == "\<up>"
+			if l:histnr > 0
+				if l:histnr == histnr(':') + 1
+					let l:cmdline_newest = l:cmdline
+				endif
+				let l:histnr -= 1
+				let l:cmdline = histget(':', l:histnr)
+			endif
+		elseif l:input == "\<c-n>" || l:input == "\<down>"
+			if l:histnr < histnr(':')
+				let l:histnr += 1
+				let l:cmdline = histget(':', l:histnr)
+			else
+				let l:histnr = histnr(':') + 1
+				let l:cmdline = l:cmdline_newest
 			endif
 		elseif l:input =~ "[1-9]" && len(l:results) >= l:input
 			let l:cmdline = l:cmdline_head.' '.l:results[l:input-1]

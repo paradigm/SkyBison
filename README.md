@@ -214,6 +214,8 @@ From here, the user may:
   in for the last term and run the cmdline.  If either ctrl-v just pressed or
   SkyBison sees either no value completions or more than one completion for
   the last term, SkyBison will simply execute the cmdline as it is.
+- Press &lt;c-p&gt; or &lt;up&gt; to go back in the cmdline history.
+- Press &lt;c-n&gt; or &lt;down&gt; to go forward in the cmdline history.
 - Enter another character.  This could serve to narrow down the possible
   values for the last term or simply be new content unrelated to completion
   (such as using :e on a new file).
@@ -226,6 +228,9 @@ fill out the rest, at which point you can hit &lt;cr&gt;.
 
 Changelog
 ---------
+
+0.7 (2013-06-19):
+ - added basic history functionality
 
 0.6 (2012-12-18):
  - bug fix
