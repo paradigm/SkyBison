@@ -78,6 +78,9 @@ function SkyBison(initcmdline)
 	syntax match Comment /^\[.*/
 	" prompt cursor
 	syntax match Comment /^:.*_$/hs=e
+	" remove any signs that could be placed in the output window from things
+	" such as other plugins.
+	execute "sign unplace * buffer=" . bufnr(".")
 
 	" initialize other variables
 	let l:cmdline = a:initcmdline
