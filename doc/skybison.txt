@@ -7,7 +7,8 @@ SkyBison
 1. Description                                        |skybison-intro|
 2. Setup                                              |skybison-setup|
 3. Usage                                              |skybison-usage|
-4. Changelog                                          |skybison-changelog|
+4. Options                                            |skybison-options|
+5. Changelog                                          |skybison-changelog|
 
 ==============================================================================
 1. Description                                                *skybison-intro*
@@ -179,24 +180,6 @@ mapping like so:
 
 where {keys} is replaced with what you want to type, such as "<c-l>"
 
-SkyBison also supports two variations of fuzzy matching.  To use no fuzzy
-matching, either set:
-
-    let g:skybison_fuzz = 0
-
-or simply leave that variable unset.  To use "full" fuzzy matching, where SkyBison
-will only care that the possible match includes the characters you've entered
-in order (irrelevant of what is or is not between them, set:
-
-    let g:skybison_fuzz = 1
-
-To use substring matching, where SkyBison will ignore characters before and
-after the string you've entered, but require that all of the characters you've
-entered are available in the possible match in order with nothing in between
-them, set:
-
-    let g:skybison_fuzz = 2
-
 ==============================================================================
 3. Usage                                                      *skybison-usage*
 
@@ -205,6 +188,7 @@ the what Vim considers as possible arguments to the current cmdline's prompt.
 From here, the user may:
 
 - Press <esc> to abort, akin to |c_<esc>|
+- Press ctrl-c to abort, akin to |c_ctrl-c|
 - Press ctrl-u to clear prompt, akin to |c_ctrl-u|
 - Press ctrl-w to remove the word behind the cursor, akin to |c_ctrl-w|
 - Press <tab> or ctrl-l to complete the shared part of the last term, akin to
@@ -231,13 +215,75 @@ information to uniquely identify the first part of it, then use either ctrl-l
 or <tab> and SkyBison will fill out the rest, at which point you can hit <cr>.
 
 ==============================================================================
-4. Changelog                                              *skybison-changelog*
+4. Options                                                  *skybison-options*
+
+                                                            *g:skybison_fuzz*
+
+SkyBison supports two variations of fuzzy matching.  To use no fuzzy matching,
+either set:
+
+    let g:skybison_fuzz = 0
+
+or simply leave that variable unset.  To use "full" fuzzy matching, where SkyBison
+will only care that the possible match includes the characters you've entered
+in order (irrelevant of what is or is not between them, set:
+
+    let g:skybison_fuzz = 1
+
+To use substring matching, where SkyBison will ignore characters before and
+after the string you've entered, but require that all of the characters you've
+entered are available in the possible match in order with nothing in between
+them, set:
+
+    let g:skybison_fuzz = 2
+
+                                                            *g:skybison_input*
+
+SkyBison has two input methods, each of which has a advantages and
+disadvantages.  You can set
+
+    g:skybison_input = 0
+
+or
+
+    g:skybison_input = 1
+
+to pick which one you'd like.  If you leave the variable unset,
+g:skybison_input=0 is the default.
+
+With g:skybison_input empty or set to "0", SkyBison will use |getchar()|.  The
+advantages of this are:
+- It is probably more efficient while waiting for input than the alternative.
+- It seems to work properly.
+The disadvantages are:
+- The cursor flashes input is typed.  Some people find this annoying.
+
+With g:skybison_input set to "1", SkyBison will use a while loop waiting for
+getchar(1).  The advantages of this are:
+- Hides the cursor
+The disadvantages are:
+- As of Vim 7.4.9, you have to hit |<esc>| twice for it to be recognized.
+  Note that |ctrl-c| can be used to cancel in one key press.  This is probably
+  Vim's fault; eventually someone will probably patch this.
+- It may keep the CPU awake while waiting for input, and thus be less
+  efficient than the alternative.
+
+
+==============================================================================
+5. Changelog                                              *skybison-changelog*
+
+0.8 (2013-09-09):
+ - reworked docs
+ - added alternative input method which hides cursor
+ - explicitly set desired showmode
+ - removed signs in skybison window set by other plugins
 
 0.7 (2013-06-19):
  - added basic history functionality
 
 0.6 (2012-12-18):
  - bug fix
+ - added ctrl-c
 
 0.5 (2012-11-07):
  - refactored code, slight cleaner and faster

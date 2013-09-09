@@ -212,7 +212,13 @@ function SkyBison(initcmdline)
 		redraw
 
 		" get input from user
-		let l:input = getchar()
+		if exists("g:skybison_input") && g:skybison_input == 1
+			while getchar(1) == 0
+			endwhile
+			let l:input = getchar(0)
+		else
+			let l:input = getchar()
+		endif
 		if type(l:input) == 0
 			let l:input = nr2char(l:input)
 		endif
