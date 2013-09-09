@@ -57,6 +57,7 @@ function SkyBison(initcmdline)
 
 	" setup output window
 	botright new
+	let s:sbwinnr = winnr()
 	resize 11
 	normal "10oggzt"
 	for l:linenumber in range(1,11)
@@ -150,6 +151,10 @@ function SkyBison(initcmdline)
 			execute 'syntax match Identifier /\V\c'.l:escaped_tail.'/'
 		endif
 
+		" move focus back to previous window so buffer/window-specific items
+		" are properly completely
+		execute s:initwinnr."wincmd w"
+
 		" Determine cmdline-completion options.  Huge thanks to ZyX-I for
 		" helping me do this so cleanly.
 		let l:d={}
@@ -162,6 +167,9 @@ function SkyBison(initcmdline)
 		else
 			let l:results = []
 		endif
+
+		" switch back to skybison window
+		execute s:sbwinnr."wincmd w"
 
 		" output
 		" clear buffer
