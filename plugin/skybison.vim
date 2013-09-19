@@ -8,6 +8,8 @@
 "
 " See skybison.txt for documentation.
 
+scriptencoding utf-8
+
 if exists('g:skybison_loaded')
 	finish
 endif
@@ -82,7 +84,7 @@ function SkyBison(initcmdline)
 		setlocal norelativenumber
 	endif
 	" line numbering on left
-	syntax match LineNr  /^./
+	syntax match LineNr  /^[0-9·]/
 	" -- more -- message
 	syntax match MoreMsg /^-.*/
 	" [No Results] message
