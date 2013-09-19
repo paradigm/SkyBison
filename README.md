@@ -268,6 +268,38 @@ The disadvantages are:
 - It may keep the CPU awake while waiting for input, and thus be less
   efficient than the alternative.
 
+Miscellaneous
+-------------
+
+SkyBison uses Vim's |cmdline-completion| under-the-hood.  This allows SkyBison
+to support a wide variety of commands without requiring logic per command, and
+thus allows SkyBison to be quite lightweight in comparison to other plugins.
+
+Globbing with `*` and `**` work as one would typically expect.  For example, `:e
+**/*.vim` could be used to prompt for every file ending in `.vim` in the
+current directory or any subdirectory.  See `starstar` for details.
+
+SkyBison works just fine as a general cmdline, not just for specific commands.
+It handles things like pipes properly.
+
+The downside to using Vim's cmdline-completion under-the-hood is that requests
+which can take Vim's cmdline-completion a while to complete will also choke
+SkyBison.  This is particularly noticeable in situations such as:
+- Use of `**` in a directory with many levels of subdirectories and files.
+- Using `:tag`  with very large tag files.
+- Some uses of `:help`, such as hitting `e` after `:h `
+
+When using commands which browse the filesystem, such as `:e`, directories
+will be recognized as valid/selectable options before SkyBison realizes that
+they can be expanded to generate new completion options.  Hence using a
+{count} on such items will select the directory, which is often not desirable.
+It is probably possible to have SkyBison double-check that a given input only
+has one option before automatically selecting it to remedy this should the
+time be taken to investigate it.
+
+Running `:e` on a directory does not currently bring up the netrw window.
+This can probably be fixed should the time be taken to investigate it.
+
 Changelog
 ---------
 
