@@ -191,7 +191,7 @@ From here, the user may:
   option to select it.
 - Press ctrl-g to toggle numberselect for the current SkyBison session
 - Press ctrl-v to literally insert the next character.  This can be used to
-  bypass numberselect for the next keystroke.  Akin to |c_ctrl-v|.
+  bypass numberselect for the next keystroke.  Akin to `c_ctrl-v`.
 - Press &lt;cr&gt;.  If SkyBison recognizes only one possible value for the last
   term (and ctrl-v was not just pressed), SkyBison will substitute that value
   in for the last term and run the cmdline.  If either ctrl-v just pressed or
@@ -251,7 +251,7 @@ or
 to pick which one you'd like.  If you leave the variable unset,
 g:skybison_input=0 is the default.
 
-With g:skybison_input empty or set to "0", SkyBison will use |getchar()|.  The
+With g:skybison_input empty or set to "0", SkyBison will use `getchar()`.  The
 advantages of this are:
 - It is probably more efficient while waiting for input than the alternative.
 - It seems to work properly.
@@ -262,8 +262,8 @@ With g:skybison_input set to "1", SkyBison will use a while loop waiting for
 getchar(1).  The advantages of this are:
 - Hides the cursor
 The disadvantages are:
-- As of Vim 7.4.9, you have to hit |<esc>| twice for it to be recognized.
-  Note that |ctrl-c| can be used to cancel in one key press.  This is probably
+- As of Vim 7.4.9, you have to hit `<esc>` twice for it to be recognized.
+  Note that `ctrl-c` can be used to cancel in one key press.  This is probably
   Vim's fault; eventually someone will probably patch this.
 - It may keep the CPU awake while waiting for input, and thus be less
   efficient than the alternative.
@@ -271,7 +271,7 @@ The disadvantages are:
 Miscellaneous
 -------------
 
-SkyBison uses Vim's |cmdline-completion| under-the-hood.  This allows SkyBison
+SkyBison uses Vim's `cmdline-completion` under-the-hood.  This allows SkyBison
 to support a wide variety of commands without requiring logic per command, and
 thus allows SkyBison to be quite lightweight in comparison to other plugins.
 
