@@ -20,7 +20,7 @@ function s:RunCommandAndQuit(cmdline)
 	" reset changed settings
 	let &laststatus = s:initlaststatus
 	let &showmode = s:initshowmode
-	bdelete!
+	silent! hide
 	execute s:initwinnr."wincmd w"
 	redraw
 
@@ -80,6 +80,7 @@ function SkyBison(initcmdline)
 	setlocal nocursorline
 	setlocal nonumber
 	setlocal nowrap
+	setlocal bufhidden=delete
 	if exists("&relativenumber")
 		setlocal norelativenumber
 	endif
