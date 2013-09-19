@@ -44,9 +44,9 @@ For example:
 If Vim has three (listed) buffers, ".vimrc", ".bashrc" and ".zshrc", and the
 user calls SkyBison("b "), the user will see the following:
 
-    [1] .vimrc
-    [2] .bashrc
-    [3] .zshrc
+    1 .vimrc
+    2 .bashrc
+    3 .zshrc
     :b 
 
 If the user inputs "v", SkyBison will recognize that the user wants ".vimrc"
@@ -54,8 +54,8 @@ and select it (or prompt the user to hit &lt;cr&gt; to select it).  However, if 
 user inputs "s" (which is in both .bashrc and .zshrc, but not in .vimrc), the
 user will see the following:
 
-    [1] .bashrc
-    [2] .zshrc
+    1 .bashrc
+    2 .zshrc
     :b s
 
 SkyBison recognizes that .vimrc is no longer an option and drops it from the
@@ -173,25 +173,7 @@ mapping like so:
 
     cnoremap {keys} <c-r>=SkyBison("")<cr><cr>
 
-where {keys} is replaced with what you want to type, such as "<c-l>"
-
-SkyBison also supports two variations of fuzzy matching.  To use no fuzzy
-matching, either set:
-
-    let g:skybison_fuzz = 0
-
-or simply leave that variable unset.  To use "full" fuzzy matching, where SkyBison
-will only care that the possible match includes the characters you've entered
-in order (irrelevant of what is or is not between them, set:
-
-    let g:skybison_fuzz = 1
-
-To use substring matching, where SkyBison will ignore characters before and
-after the string you've entered, but require that all of the characters you've
-entered are available in the possible match in order with nothing in between
-them, set:
-
-    let g:skybison_fuzz = 2
+where {keys} is replaced with what you want to type, such as "&lt;c-l&gt;"
 
 Usage
 -----
@@ -205,10 +187,11 @@ From here, the user may:
 - Press ctrl-w to remove the word behind the cursor, akin to c_ctrl-w
 - Press &lt;tab&gt; or ctrl-l to complete the shared part of the last term, akin to
   c_ctrl-l
-- Press the number next to an option to select it
-- Press ctrl-v to literally insert the next character, bypassing the above
-  items.  Akin to c_ctrl-v.  For example, if one would like to enter the
-  digit "3" but not necessary select the third option, one could type &lt;c-v&gt;3.
+- If numberselect is on (which it is by default), press the number next to an
+  option to select it.
+- Press ctrl-g to toggle numberselect for the current SkyBison session
+- Press ctrl-v to literally insert the next character.  This can be used to
+  bypass numberselect for the next keystroke.  Akin to |c_ctrl-v|.
 - Press &lt;cr&gt;.  If SkyBison recognizes only one possible value for the last
   term (and ctrl-v was not just pressed), SkyBison will substitute that value
   in for the last term and run the cmdline.  If either ctrl-v just pressed or
@@ -226,8 +209,76 @@ the whitespace.  To select one, give enough information to uniquely identify
 the first part of it, then use either ctrl-l or &lt;tab&gt; and SkyBison will
 fill out the rest, at which point you can hit &lt;cr&gt;.
 
+Options
+-------
+
+SkyBison supports two variations of fuzzy matching.  To use no fuzzy matching,
+either set:
+
+    let g:skybison_fuzz = 0
+
+or simply leave that variable unset.  To use "full" fuzzy matching, where SkyBison
+will only care that the possible match includes the characters you've entered
+in order (irrelevant of what is or is not between them, set:
+
+    let g:skybison_fuzz = 1
+
+To use substring matching, where SkyBison will ignore characters before and
+after the string you've entered, but require that all of the characters you've
+entered are available in the possible match in order with nothing in between
+them, set:
+
+    let g:skybison_fuzz = 2
+
+By default, if you press a number 1-9 and at least that many items exist in
+the output, that item will be selected.  This can be disabled by default by
+setting the following:
+
+    let g:skybison_numberselect = 0
+
+You can also toggle this setting for the duration of a given SkyBison session
+by pressing ctrl-g.
+
+SkyBison has two input methods, each of which has a advantages and
+disadvantages.  You can set
+
+    g:skybison_input = 0
+
+or
+
+    g:skybison_input = 1
+
+to pick which one you'd like.  If you leave the variable unset,
+g:skybison_input=0 is the default.
+
+With g:skybison_input empty or set to "0", SkyBison will use |getchar()|.  The
+advantages of this are:
+- It is probably more efficient while waiting for input than the alternative.
+- It seems to work properly.
+The disadvantages are:
+- The cursor flashes input is typed.  Some people find this annoying.
+
+With g:skybison_input set to "1", SkyBison will use a while loop waiting for
+getchar(1).  The advantages of this are:
+- Hides the cursor
+The disadvantages are:
+- As of Vim 7.4.9, you have to hit |<esc>| twice for it to be recognized.
+  Note that |ctrl-c| can be used to cancel in one key press.  This is probably
+  Vim's fault; eventually someone will probably patch this.
+- It may keep the CPU awake while waiting for input, and thus be less
+  efficient than the alternative.
+
 Changelog
 ---------
+
+0.9 (2013-09-18):
+ - Added g:skybison_numberselect and ctrl-g
+
+0.8 (2013-09-09):
+ - reworked docs
+ - added alternative input method which hides cursor
+ - explicitly set desired showmode
+ - removed signs in skybison window set by other plugins
 
 0.7 (2013-06-19):
  - added basic history functionality

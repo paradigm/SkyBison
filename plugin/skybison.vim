@@ -1,8 +1,8 @@
 " Vim plugin to expidite use of cmdline commands
 " Maintainer: Daniel Thau (paradigm@bedrocklinux.org)
-" Version: 0.8
+" Version: 0.9
 " Description: SkyBison is a Vim plugin used to expedite the use of cmdline.
-" Last Change: 2013-09-09
+" Last Change: 2013-09-18
 " Location: plugin/SkyBison.vim
 " Website: https://github.com/paradigm/skybison
 "
@@ -48,6 +48,13 @@ function SkyBison(initcmdline)
 	" potentially change it.
 	let l:vcount = v:count
 
+	" set the initial g:skybison_numberselect setting for the session
+	if exists("g:skybison_numberselect")
+		let l:numberselect = g:skybison_numberselect
+	else
+		let l:numberselect = 1
+	endif
+
 	" use try/catch to make sure we always properly clean up
 	try
 
@@ -75,7 +82,7 @@ function SkyBison(initcmdline)
 		setlocal norelativenumber
 	endif
 	" line numbering on left
-	syntax match LineNr  /^\d/
+	syntax match LineNr  /^./
 	" -- more -- message
 	syntax match MoreMsg /^-.*/
 	" [No Results] message
@@ -185,7 +192,11 @@ function SkyBison(initcmdline)
 			let l:linenumber+=1
 		endif
 		for l:result in l:results[0:8]
-			call setline(l:linenumber,l:counter." ".l:result)
+			if l:numberselect == 1
+				call setline(l:linenumber,l:counter." ".l:result)
+			else
+				call setline(l:linenumber,"· ".l:result)
+			endif
 			let l:linenumber+=1
 			let l:counter+=1
 		endfor
@@ -274,7 +285,9 @@ function SkyBison(initcmdline)
 				let l:histnr = histnr(':') + 1
 				let l:cmdline = l:cmdline_newest
 			endif
-		elseif l:input =~ "[1-9]" && len(l:results) >= l:input
+		elseif l:input == "\<c-g>"
+			let l:numberselect = 1 - l:numberselect
+		elseif l:input =~ "[1-9]" && l:numberselect == 1 && len(l:results) >= l:input
 			let l:cmdline = l:cmdline_head.' '.l:results[l:input-1]
 		else
 			let l:cmdline.=l:input
