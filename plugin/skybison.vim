@@ -89,7 +89,8 @@ function SkyBison(initcmdline)
 	syntax match Comment /^:.*_$/hs=e
 	" remove any signs that could be placed in the output window from things
 	" such as other plugins.
-	if bufnr(".") != -1
+	redir => l:signs | silent execute "sign place buffer=" . bufnr("%") | redir END
+	if len(split(l:signs,"\n")) > 1
 		execute "sign unplace * buffer=" . bufnr(".")
 	endif
 
