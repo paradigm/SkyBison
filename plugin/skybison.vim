@@ -22,6 +22,7 @@ function s:RunCommandAndQuit(cmdline)
 	let &showmode = s:initshowmode
 	silent! hide
 	execute s:initwinnr."wincmd w"
+	execute s:winsizecmd
 	redraw
 
 	" run command, add to history and quit
@@ -57,6 +58,7 @@ function SkyBison(initcmdline)
 	try
 
 	" set and save global settings to restore on exit
+	let s:winsizecmd = winrestcmd()
 	let s:initlaststatus = &laststatus
 	let &laststatus = 0
 	let s:initshowmode = &showmode
