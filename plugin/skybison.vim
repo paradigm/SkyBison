@@ -20,6 +20,7 @@ function s:RunCommandAndQuit(cmdline)
 	" reset changed settings
 	let &laststatus = s:initlaststatus
 	let &showmode = s:initshowmode
+	let &shellslash = s:initshellslash
 	silent! hide
 	execute s:initwinnr."wincmd w"
 	execute s:winsizecmd
@@ -63,6 +64,8 @@ function SkyBison(initcmdline)
 	let &laststatus = 0
 	let s:initshowmode = &showmode
 	let &showmode = 1
+	let s:initshellslash = &shellslash
+	let &shellslash = 1
 	let s:initwinnr = winnr()
 
 	" setup output window
