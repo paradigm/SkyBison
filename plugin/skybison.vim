@@ -21,6 +21,7 @@ function s:RunCommandAndQuit(cmdline)
 	let &laststatus = s:initlaststatus
 	let &showmode = s:initshowmode
 	let &shellslash = s:initshellslash
+	let &winheight = s:winheight
 	silent! hide
 	execute s:initwinnr."wincmd w"
 	execute s:winsizecmd
@@ -67,6 +68,8 @@ function SkyBison(initcmdline)
 	let s:initshellslash = &shellslash
 	let &shellslash = 1
 	let s:initwinnr = winnr()
+	let s:winheight = &winheight
+	let &winheight = 1
 
 	" setup output window
 	botright 11new
