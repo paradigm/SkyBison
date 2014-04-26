@@ -214,7 +214,7 @@ function SkyBison(initcmdline)
 			call setline(10,"[No Results]")
 		elseif len(l:results) == 1
 			if len(l:cmdline_terms) == l:vcount && l:vcount != 0
-				let l:cmdline = l:cmdline_head.' '.l:results[0]
+				let l:cmdline = l:cmdline_head != "" ?  l:cmdline_head.' '.l:results[0] : l:results[0]
 				break " run cmdline outside of try/catch
 			else
 				if l:ctrlv
@@ -277,7 +277,7 @@ function SkyBison(initcmdline)
 			endif
 		elseif l:input == "\<cr>"
 			if len(l:results) == 1
-				let l:cmdline = l:cmdline_head.' '.l:results[0]
+				let l:cmdline = l:cmdline_head != "" ?  l:cmdline_head.' '.l:results[0] : l:results[0]
 				break " run cmdline outside of try/catch
 			else
 				break " run cmdline outside of try/catch
