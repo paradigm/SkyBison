@@ -250,7 +250,7 @@ function SkyBison(initcmdline)
 			end
 			let l:ctrlv = 0
 			let l:cmdline.=l:input
-		elseif l:input == "\<esc>"
+		elseif l:input == "\<esc>" || l:input == "\<c-c>"
 			let l:cmdline = ""
 			break " run cmdline outside of try/catch
 		elseif l:input == "\<c-v>"
