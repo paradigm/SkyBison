@@ -35,6 +35,10 @@ function s:RunCommandAndQuit(cmdline)
 	return 0
 endfunction
 
+function! s:iskeyword(ch)
+	return match(a:ch, "^\\k") == 0
+endfunction
+
 " main function
 function SkyBison(initcmdline)
 	" If starting from the cmdline, restart with the cmdline's value
@@ -265,7 +269,8 @@ function SkyBison(initcmdline)
 			if l:cmdline[-1:] == " "
 				let l:cmdline = l:cmdline[:-2]
 			endif
-			while strlen(l:cmdline) > 0 && l:cmdline[-1:] != " "
+			let l:iskw = s:iskeyword(l:cmdline[-1:])
+			while strlen(l:cmdline) > 0 && s:iskeyword(l:cmdline[-1:]) == l:iskw
 				let l:cmdline = l:cmdline[:-2]
 			endwhile
 		elseif l:input == "\<tab>" || l:input == "\<c-l>"
