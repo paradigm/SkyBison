@@ -149,6 +149,7 @@ function SkyBison(initcmdline)
 		let l:fuzzed_tail = substitute(l:fuzzed_tail,'*\.\*\.','..','g')
 		let l:fuzzed_tail = substitute(l:fuzzed_tail,'/\*\.','/.','g')
 		let l:fuzzed_tail = substitute(l:fuzzed_tail,'\*|','|','g')
+		let l:fuzzed_tail = substitute(l:fuzzed_tail,'\*\~\(\*/\)\?','~/','g')
 		" build fuzzed cmdline from fuzzed_tail
 		if l:cmdline_head != ''
 			let l:fuzzed_cmdline = l:cmdline_head .' '.l:fuzzed_tail
